@@ -7,17 +7,17 @@ Simulação de uma estação de recarga **comercial** com dois carregadores de 2
 ## Equipe
 
 | Nome | RM |
-|---|---|
-| [Nome 1] | [RM] |
-| [Nome 2] | [RM] |
-| [Nome 3] | [RM] |
-| [Nome 4] | [RM] |
+ Luiz Cesar Conti Salvador  RM:571305
+ Victor do Prado Manzini RM: 572123
+ Caio Marinho Pereira  RM: 572873
+ Ricardo Tunes Vaca RM: 555919
+ Guilherme de Oliveira Santos RM: 572195
 
 ## Links
 
 - **Vídeo técnico (YouTube, não listado):** [colar link]
-- **Projeto no Wokwi:** [colar link do projeto salvo]
-- **Repositório:** [colar link do GitHub]
+- **Projeto no Wokwi:** https://wokwi.com/projects/478315028949460993
+- **Repositório:** https://github.com/LuizSalvador-GIT/SPRINT4_PYTHON
 
 ---
 
