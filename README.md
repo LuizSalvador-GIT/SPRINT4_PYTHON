@@ -95,9 +95,9 @@ O projeto **não usa equipamentos Goodwe reais**. Ele **simula o comportamento**
 | O que foi simulado | Referência Goodwe | Observação |
 |---|---|---|
 | Carregador de 22 kW | Linha de carregadores HCA, com modelo de 22 kW (GW22K-HCA) | Fonte: distribuidores; confirmar no site oficial |
-| Prioridade solar nos carregadores (`SOL_DIRETO`) | Carga por excedente solar (*surplus charging*) dos carregadores HCA em conexão com inversores Goodwe | |
-| Gestão de carga e limite da rede | Recursos de gestão de carga e excedente solar da geração HCA-G2 | |
-| Carga só com sol ou reforço pela rede | Modos de carga configuráveis no app SEMS+, com comunicação entre carregador, inversor e bateria | |
+| Prioridade solar nos carregadores (`SOL_DIRETO`) | Carga por excedente solar (*surplus charging*) dos carregadores HCA em conexão com inversores Goodwe | | Implementado: o sol abastece os veículos antes de bateria e rede. Simulação da lógica, sem comunicação real com inversor.
+| Gestão de carga e limite da rede | Recursos de gestão de carga e excedente solar da geração HCA-G2 | | Implementado: limite de importação de 30 kW e redução proporcional da potência dos carregadores. (LIMITANDO_POTENCIA)
+| Carga só com sol ou reforço pela rede | Modos de carga configuráveis no app SEMS+, com comunicação entre carregador, inversor e bateria | | Simulado pela ordem sol, rede e bateria (e bateria antes da rede na ponta). Os modos configuráveis do app SEMS+ não foram implementados.
 | Painel em tempo real | Acompanhamento das cargas no SEMS Portal e no app | O painel imita o conceito; não usa a API real |
 | Proteções (relé da rede, anti-ilhamento) | Proteções integradas do carregador (corrente residual DC, parada de emergência) e do inversor | Confirmar proteções do inversor escolhido no datasheet |
 | Inversor híbrido e bateria | Linha híbrida (solar + bateria + rede) | Modelo a confirmar no datasheet |
