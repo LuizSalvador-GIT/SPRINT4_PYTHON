@@ -176,15 +176,24 @@ Preencher com os valores do painel após rodar um dia completo.
 
 | Indicador | Valor |
 |---|---|
-| Energia entregue aos veículos | [__] kWh |
-| Energia limpa (solar direta ou via bateria) | [__] % |
-| Autonomia estimada entregue | [__] km |
-| CO₂ evitado | [__] kg |
-| Economia estimada | R$ [__] |
-| Pico de demanda da rede | [__] kW (limite: 30 kW) |
-| Sessões de recarga | [__] |
+| Energia entregue aos veículos | [49%] kWh |
+| Energia limpa (solar direta ou via bateria) | [_133,8_] % |
+| Autonomia estimada entregue | [_803_] km |
+| CO₂ evitado | [_2,64_] kg |
+| Economia estimada | R$ [_131,86_] |
+| Pico de demanda da rede | [_22_] kW (limite: 30 kW) |
+| Sessões de recarga | [_4_] |
 
 Inserir aqui: print do painel, print do circuito no Wokwi e print do terminal.
+
+<img width="858" height="929" alt="Captura de Tela 2026-10-22 às 08 57 53" src="https://github.com/user-attachments/assets/68ce318b-0cb0-4f73-95a1-82408dd019b1" />
+<img width="467" height="225" alt="Captura de Tela 2026-10-22 às 08 59 40" src="https://github.com/user-attachments/assets/b4d0b7a7-9245-4c68-baf5-5f091af5eb6f" />
+<img width="863" height="645" alt="Captura de Tela 2026-10-22 às 08 59 10" src="https://github.com/user-attachments/assets/c8744902-29f8-428b-a53a-f44ad770e07a" />
+<img width="1679" height="966" alt="Captura de Tela 2026-10-22 às 08 58 19" src="https://github.com/user-attachments/assets/f442c005-66ae-4526-a336-9158673e5fd7" />
+
+
+
+
 
 ### Resultados qualitativos
 - O painel torna a decisão do sistema legível (fluxo animado e frase de decisão).
@@ -230,25 +239,29 @@ Integração com inversor e carregador reais via Modbus, uso de sensores de tens
 
 ---
 
-## 9. Referências e ferramentas
-
-### Ferramentas e tecnologias
-- **Hardware simulado:** ESP32 DevKit, potenciômetros, chaves, relés e LEDs, no [Wokwi](https://wokwi.com)
-- **Linguagem do firmware:** C++ (framework Arduino para ESP32)
-- **Bibliotecas:** WiFi (ESP32), [PubSubClient](https://github.com/knolleary/pubsubclient) (MQTT)
-- **Comunicação:** MQTT sobre Wi-Fi, broker público HiveMQ
-- **Painel:** HTML, CSS, JavaScript, [MQTT.js](https://github.com/mqttjs/MQTT.js), fontes Bricolage Grotesque e IBM Plex Sans
-
 ### Referências Goodwe (consultadas em distribuidores; confirmar no site oficial da Goodwe)
 - Carregador GW22K-HCA: https://shop.krannich-solar.com/en-se/EV-Charger-GW-22K-HCA/8253003
 - Carregador GW7K-HCA G2 (gestão de carga, excedente solar, RS485, LAN e Wi-Fi): https://shop.krannich-solar.com/de-en/e-mobility/ac-charging-stations/71716/ev-charger-gw-7k-hca-g2
 - Carregador GW22K-HCA-20 (modos no app SEMS+): https://www.solartraders.com/en/products/accessories/e-mobility/goodwe-gw22k-hca-20
-- Site oficial: https://www.goodwe.com
-- [Adicionar: datasheet do inversor híbrido e da bateria escolhidos]
+- Site oficial da Goodwe (inversores híbridos e baterias): https://www.goodwe.com. Os modelos exatos de inversor e bateria não foram fixados; a simulação usa valores de referência (usina de 30 kW e bateria de 30 kWh).
 
-### Outras referências
-- [Adicionar: fator de emissão do MCTI, norma ABNT NBR 16149, tarifa da distribuidora]
+### Fator de emissão de CO₂
+- Fator médio de emissão do Sistema Interligado Nacional (SIN), divulgado pelo MCTI: 38,5 kg CO₂/MWh em 2023 (https://www.osetoreletrico.com.br/?p=159478). A simulação usa 0,04 kg CO₂/kWh, arredondado a partir desse valor. O fator varia mês a mês (por exemplo, 28,9 kg/MWh em abril de 2025, segundo o SIRENE/MCTI), então o CO₂ evitado é uma estimativa.
 
+### Normas e regulamentação
+- ABNT NBR 16149: Sistemas fotovoltaicos (FV) – Características da interface de conexão com a rede elétrica de distribuição. Os limites de tensão da simulação (80% a 110% de 220 V) são uma premissa inspirada nessa norma e devem ser confirmados nela e nas regras da distribuidora.
+
+### Premissas do cenário (não extraídas de fonte oficial)
+- Tarifas de R$ 0,80/kWh (fora de ponta) e R$ 2,00/kWh (ponta): valores ilustrativos, definidos para demonstrar a lógica. Para um caso real, usar a tarifa da distribuidora.
+- Horário de ponta de 18h às 21h: janela de três horas escolhida como exemplo. Na prática, é definida por cada distribuidora.
+- Demanda contratada de 30 kW: premissa do cenário.
+- Autonomia de 6 km/kWh: estimativa típica para veículos elétricos de passeio, usada apenas para ilustração.
+
+### Ferramentas e tecnologias
+- Wokwi (simulação de ESP32): https://wokwi.com
+- PubSubClient (MQTT para Arduino/ESP32): https://github.com/knolleary/pubsubclient
+- MQTT.js (cliente MQTT no navegador): https://github.com/mqttjs/MQTT.js
+- Broker público HiveMQ: https://www.hivemq.com
 ---
 
 ## 10. Estrutura do repositório
