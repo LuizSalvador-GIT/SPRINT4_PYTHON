@@ -7,15 +7,16 @@ Simulação de uma estação de recarga **comercial** com dois carregadores de 2
 ## Equipe
 
 | Nome | RM |
- Luiz Cesar Conti Salvador  RM:571305
- Victor do Prado Manzini RM: 572123
- Caio Marinho Pereira  RM: 572873
- Ricardo Tunes Vaca RM: 555919
- Guilherme de Oliveira Santos RM: 572195
+|---|---|
+| Luiz Cesar Conti Salvador | 571305 |
+| Victor do Prado Manzini | 572123 |
+| Caio Marinho Pereira | 572873 |
+| Ricardo Tunes Vaca | 555919 |
+| Guilherme de Oliveira Santos | 572195 |
 
 ## Links
 
-- **Vídeo técnico (YouTube, não listado): https://youtu.be/_xbyp0m53f4
+- **Vídeo técnico (YouTube, não listado):** https://youtu.be/_xbyp0m53f4
 - **Projeto no Wokwi:** https://wokwi.com/projects/478315028949460993
 - **Repositório:** https://github.com/LuizSalvador-GIT/SPRINT4_PYTHON
 
@@ -113,6 +114,7 @@ O projeto aplica, de forma integrada, os conceitos trabalhados na disciplina:
 - **Conectividade e IoT:** o ESP32 usa Wi-Fi e o protocolo MQTT (publicação e assinatura) para enviar a telemetria em formato JSON.
 - **Visualização de dados:** um painel web mostra o fluxo de energia, a decisão do sistema, gráficos e indicadores de impacto em tempo real.
 - **Simulação de hardware:** a validação foi feita no Wokwi, o que permitiu testar o sistema completo sem o protótipo físico.
+
 ---
 
 ## 4. Lógica de decisão
@@ -172,28 +174,24 @@ A geração é o **nível de sol** (potenciômetro, 0 a 100%) multiplicado por u
 
 ### Resultados quantitativos (um dia simulado)
 
-Preencher com os valores do painel após rodar um dia completo.
-
 | Indicador | Valor |
 |---|---|
-| Energia entregue aos veículos | [49%] kWh |
-| Energia limpa (solar direta ou via bateria) | [_133,8_] % |
-| Autonomia estimada entregue | [_803_] km |
-| CO₂ evitado | [_2,64_] kg |
-| Economia estimada | R$ [_131,86_] |
-| Pico de demanda da rede | [_22_] kW (limite: 30 kW) |
-| Sessões de recarga | [_4_] |
+| Energia entregue aos veículos | 133,8 kWh |
+| Energia limpa (solar direta ou via bateria) | 49 % |
+| Autonomia estimada entregue | 803 km |
+| CO₂ evitado | 2,64 kg |
+| Economia estimada | R$ 131,86 |
+| Pico de demanda da rede | 22 kW (limite: 30 kW) |
+| Sessões de recarga | 4 |
 
-Inserir aqui: print do painel, print do circuito no Wokwi e print do terminal.
+### Imagens do sistema em funcionamento
 
-<img width="858" height="929" alt="Captura de Tela 2026-10-22 às 08 57 53" src="https://github.com/user-attachments/assets/68ce318b-0cb0-4f73-95a1-82408dd019b1" />
-<img width="467" height="225" alt="Captura de Tela 2026-10-22 às 08 59 40" src="https://github.com/user-attachments/assets/b4d0b7a7-9245-4c68-baf5-5f091af5eb6f" />
-<img width="863" height="645" alt="Captura de Tela 2026-10-22 às 08 59 10" src="https://github.com/user-attachments/assets/c8744902-29f8-428b-a53a-f44ad770e07a" />
-<img width="1679" height="966" alt="Captura de Tela 2026-10-22 às 08 58 19" src="https://github.com/user-attachments/assets/f442c005-66ae-4526-a336-9158673e5fd7" />
+Prints do circuito no Wokwi, do terminal serial, do painel durante a operação e dos resultados acumulados.
 
-
-
-
+<img width="858" height="929" alt="Captura de Tela 2026-10-22 às 08 57 53" src="https://github.com/user-attachments/assets/68ce318b-0cb0-4f73-95a1-82408dd019b1" />
+<img width="467" height="225" alt="Captura de Tela 2026-10-22 às 08 59 40" src="https://github.com/user-attachments/assets/b4d0b7a7-9245-4c68-baf5-5f091af5eb6f" />
+<img width="863" height="645" alt="Captura de Tela 2026-10-22 às 08 59 10" src="https://github.com/user-attachments/assets/c8744902-29f8-428b-a53a-f44ad770e07a" />
+<img width="1679" height="966" alt="Captura de Tela 2026-10-22 às 08 58 19" src="https://github.com/user-attachments/assets/f442c005-66ae-4526-a336-9158673e5fd7" />
 
 ### Resultados qualitativos
 - O painel torna a decisão do sistema legível (fluxo animado e frase de decisão).
@@ -209,6 +207,9 @@ Inserir aqui: print do painel, print do circuito no Wokwi e print do terminal.
 - **Eficiência:** a bateria reduz picos de demanda e desloca consumo da ponta.
 - **Emissões:** o CO₂ evitado é calculado com o fator médio da rede brasileira. Como esse fator é baixo, o benefício em CO₂ da energia solar é modesto. O ganho mais expressivo está em custo e gestão de demanda, e na troca de combustível fóssil por eletricidade.
 
+### Relevância social e ambiental
+A solução apoia a eletrificação do transporte ao reduzir o custo de operação de estações de recarga, o que pode tornar a infraestrutura viável em mais locais. Ao priorizar energia solar e usar a bateria para aliviar a rede nos horários de pico, também contribui para uma rede elétrica mais estável.
+
 ### Inovação
 Algoritmo de despacho com prioridades por horário, gestão dinâmica de carga, proteção com histerese, corte automático dos painéis, painel web em tempo real com decisão explicada e simulação completa de um dia.
 
@@ -220,7 +221,7 @@ Algoritmo de despacho com prioridades por horário, gestão dinâmica de carga, 
 - Broker MQTT público, adequado para demonstração, mas não para produção.
 
 ### Próximos passos
-Integração com inversor e carregador reais via Modbus, uso de sensores de tensão e corrente (por exemplo, módulos de medição), previsão de geração solar, tarifa dinâmica e opção de **zero injeção** (limitar a geração em vez de exportar).
+Integração com inversor e carregador reais via Modbus, uso de sensores de tensão e corrente (por exemplo, módulos de medição), previsão de geração solar, tarifa dinâmica, opção de **zero injeção** (limitar a geração em vez de exportar) e integração com assistente virtual (por exemplo, consultar o estado da estação e o horário de ponta por voz).
 
 ---
 
@@ -228,9 +229,9 @@ Integração com inversor e carregador reais via Modbus, uso de sensores de tens
 
 | Premissa | Valor usado | Observação |
 |---|---|---|
-| Fator de emissão da rede | 0,04 kg CO₂/kWh | Placeholder; usar o fator médio atualizado do MCTI |
-| Tarifa fora de ponta | R$ 0,80/kWh | Ajustar para a distribuidora |
-| Tarifa na ponta | R$ 2,00/kWh | Ajustar para a distribuidora |
+| Fator de emissão da rede | 0,04 kg CO₂/kWh | Arredondado a partir do fator médio do SIN em 2023 (38,5 kg/MWh, MCTI) |
+| Tarifa fora de ponta | R$ 0,80/kWh | Valor ilustrativo; ajustar para a distribuidora |
+| Tarifa na ponta | R$ 2,00/kWh | Valor ilustrativo; ajustar para a distribuidora |
 | Horário de ponta | 18h às 21h | Confirmar na distribuidora |
 | Demanda contratada | 30 kW | Premissa do cenário |
 | Autonomia do veículo | 6 km/kWh | Estimativa |
@@ -238,6 +239,8 @@ Integração com inversor e carregador reais via Modbus, uso de sensores de tens
 | Potências e capacidades | 22 kW, 30 kW, 30 kWh | Confirmar nos datasheets dos modelos Goodwe escolhidos |
 
 ---
+
+## 9. Referências e ferramentas
 
 ### Referências Goodwe (consultadas em distribuidores; confirmar no site oficial da Goodwe)
 - Carregador GW22K-HCA: https://shop.krannich-solar.com/en-se/EV-Charger-GW-22K-HCA/8253003
@@ -262,6 +265,7 @@ Integração com inversor e carregador reais via Modbus, uso de sensores de tens
 - PubSubClient (MQTT para Arduino/ESP32): https://github.com/knolleary/pubsubclient
 - MQTT.js (cliente MQTT no navegador): https://github.com/mqttjs/MQTT.js
 - Broker público HiveMQ: https://www.hivemq.com
+
 ---
 
 ## 10. Estrutura do repositório
