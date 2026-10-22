@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estação de recarga solar – Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EDF2EF; --surface:#FFFFFF; --ink:#12302F; --muted:#5E7471; --line:#D3DEDA;
+    --sun:#E9A100; --bat:#2E9A6A; --grid:#2F6BD6; --ev:#12302F; --alert:#CF3F3F; --off:#C3CFCB;
+    --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+    --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+       font-variant-numeric:tabular-nums;padding:28px clamp(16px,4vw,56px) 40px}
+  header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.4vw,38px);letter-spacing:-.02em;line-height:1.1}
+  header p{color:var(--muted);margin-top:4px;max-width:64ch}
+  .status{display:flex;align-items:center;gap:8px;font-weight:500;padding:7px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+  .hdr-right{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .clock b{font-family:var(--display);font-size:18px}
+  .clock .lb{color:var(--muted);font-weight:400}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--off)}
+  .status.live .dot{background:var(--bat);box-shadow:0 0 0 4px rgba(46,154,106,.18)}
+  .status.wait .dot{background:var(--sun)}
+  .status.off .dot{background:var(--alert)}
+  .top{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(290px,1fr);gap:24px;align-items:start}
+  .stage{background:var(--surface);border-radius:22px;padding:18px 18px 8px;border:1px solid var(--line)}
+  .stage svg{width:100%;height:auto;display:block}
+  .side{display:flex;flex-direction:column;gap:26px;padding:6px 2px}
+  h2{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:10px}
+  .decision{font-family:var(--display);font-size:clamp(21px,2.3vw,27px);line-height:1.2;font-weight:700}
+  .decision.warn{color:var(--alert)}
+  .hint{color:var(--muted);margin-top:6px}
+  .chip{display:inline-block;font-weight:600;padding:4px 12px;border-radius:999px;margin:0 8px 12px 0}
+  .chip.ok{background:rgba(46,154,106,.14);color:#1B7A50}
+  .chip.bad{background:rgba(207,63,63,.14);color:var(--alert)}
+  .chip.peak{background:rgba(233,161,0,.2);color:#8A5E00}
+  .chip.calm{background:#E3EAE7;color:var(--muted)}
+  .bar{position:relative;height:14px;border-radius:7px;background:#E3EAE7;margin:8px 0 6px;overflow:hidden}
+  .bar > i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--grid);border-radius:7px;transition:width .5s,background .3s}
+  .bar > i.full{background:var(--alert)}
+  .row{display:flex;justify-content:space-between;color:var(--muted);font-size:13.5px}
+  .row b{color:var(--ink)}
+  .gauge{position:relative;height:14px;border-radius:7px;background:#E3EAE7;margin:26px 0 8px}
+  .safe{position:absolute;top:0;bottom:0;left:58.67%;width:22%;background:rgba(46,154,106,.35);border-radius:7px}
+  .marker{position:absolute;top:-7px;width:4px;height:28px;border-radius:2px;background:var(--ink);transition:left .5s}
+  .marker.bad{background:var(--alert)}
+  .gscale{display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px}
+  .vnow{font-family:var(--display);font-size:30px;font-weight:700}
+  .vnow small{font-size:15px;font-weight:500;color:var(--muted)}
+  .lower{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(290px,1fr);gap:24px;margin-top:30px}
+  .chartwrap canvas{width:100%;height:240px;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);margin-bottom:6px}
+  .legend i{display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  .impact{display:grid}
+  .impact div{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)}
+  .impact div:last-child{border-bottom:0}
+  .impact span{color:var(--muted)}
+  .impact b{font-family:var(--display);font-size:21px}
+  .impact .big b{font-size:34px;color:var(--bat)}
+  footer{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;color:var(--muted);font-size:13px}
+  footer code{background:#E1E9E6;padding:2px 7px;border-radius:5px;color:var(--ink)}
+  button{font:inherit;font-weight:500;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:6px 14px;border-radius:8px;cursor:pointer}
+  button:hover{background:var(--ink);color:#fff}
+  button:focus-visible{outline:3px solid var(--grid);outline-offset:2px}
+  .flow{fill:none;stroke-width:7;stroke-linecap:round;stroke-dasharray:1 15;animation:move .9s linear infinite}
+  .flow.rev{animation-direction:reverse}
+  .flow.idle{stroke:var(--off)!important;animation:none;opacity:.7}
+  @keyframes move{to{stroke-dashoffset:-16}}
+  @media (prefers-reduced-motion:reduce){.flow{animation:none;stroke-dasharray:none;opacity:.8}}
+  .node{fill:#F5F8F6;stroke:var(--line);stroke-width:1.5}
+  .nl{font-family:var(--body);font-size:13px;fill:var(--muted)}
+  .nv{font-family:var(--display);font-size:25px;font-weight:700;fill:var(--ink)}
+  .ns{font-family:var(--body);font-size:12.5px;fill:var(--muted)}
+  @media (max-width:900px){.top,.lower{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Estação de recarga solar</h1>
+    <p>Dois carregadores de 22 kW alimentados por usina solar e bateria, com gestão de carga e proteção de tensão. Simulação no Wokwi, com referência a produtos Goodwe.</p>
+  </div>
+  <div class="hdr-right">
+    <div id="clock" class="status clock" aria-label="Horário simulado"><span id="clockIc" aria-hidden="true">☀</span><b id="clockTxt">--:--</b><span id="clockLb" class="lb">dia</span></div>
+    <div id="status" class="status off" role="status"><span class="dot"></span><span id="statusTxt">Conectando ao broker…</span></div>
+  </div>
+</header>
+
+<section class="top">
+  <div class="stage">
+    <svg viewBox="0 0 800 460" role="img" aria-label="Fluxo de energia entre painéis, rede, bateria e carregadores">
+      <path id="fSolar" class="flow idle" stroke="var(--sun)"  d="M400,85 L400,183"/>
+      <path id="fBat"   class="flow idle" stroke="var(--bat)"  d="M400,267 L400,373"/>
+      <path id="fRede"  class="flow idle" stroke="var(--grid)" d="M333,225 L152,225"/>
+      <path id="fC1"    class="flow idle" stroke="var(--ev)"   d="M467,212 C540,212 565,118 638,118"/>
+      <path id="fC2"    class="flow idle" stroke="var(--ev)"   d="M467,238 C540,238 565,342 638,342"/>
+      <text id="gridCut" x="243" y="209" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="13" font-weight="600" fill="var(--alert)" visibility="hidden">desconectada</text>
+
+      <rect x="335" y="185" width="132" height="80" rx="14" fill="var(--ink)"/>
+      <text x="401" y="217" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="17" font-weight="700" fill="#fff">Inversor</text>
+      <text x="401" y="240" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="12.5" fill="#BFD2CE">híbrido (ref. Goodwe)</text>
+
+      <rect class="node" x="330" y="15" width="140" height="70" rx="14"/>
+      <text class="nl" x="400" y="36" text-anchor="middle">Usina solar</text>
+      <text id="vSolar" class="nv" x="400" y="60" text-anchor="middle">0,0 kW</text>
+      <text id="sSolar" class="ns" x="400" y="77" text-anchor="middle"></text>
+
+      <rect class="node" x="330" y="375" width="140" height="76" rx="14"/>
+      <text class="nl" x="400" y="395" text-anchor="middle">Bateria da estação</text>
+      <text id="vBat" class="nv" x="400" y="420" text-anchor="middle">0%</text>
+      <rect x="360" y="430" width="80" height="8" rx="4" fill="#E3EAE7"/>
+      <rect id="socBar" x="360" y="430" width="0" height="8" rx="4" fill="var(--bat)"/>
+      <text id="sBat" class="ns" x="482" y="420" text-anchor="start"></text>
+
+      <rect class="node" x="30" y="190" width="120" height="70" rx="14"/>
+      <text class="nl" x="90" y="211" text-anchor="middle">Rede elétrica</text>
+      <text id="vRede" class="nv" x="90" y="237" text-anchor="middle">0,0 kW</text>
+      <text id="sRede" class="ns" x="90" y="253" text-anchor="middle"></text>
+
+      <rect class="node" x="640" y="66" width="140" height="104" rx="14"/>
+      <text class="nl" x="710" y="87" text-anchor="middle">Carregador 1</text>
+      <text id="vC1" class="nv" x="710" y="115" text-anchor="middle">0,0 kW</text>
+      <text id="sC1" class="ns" x="710" y="134" text-anchor="middle">livre</text>
+      <rect x="660" y="146" width="100" height="8" rx="4" fill="#E3EAE7"/>
+      <rect id="bC1" x="660" y="146" width="0" height="8" rx="4" fill="var(--ink)"/>
+
+      <rect class="node" x="640" y="290" width="140" height="104" rx="14"/>
+      <text class="nl" x="710" y="311" text-anchor="middle">Carregador 2</text>
+      <text id="vC2" class="nv" x="710" y="339" text-anchor="middle">0,0 kW</text>
+      <text id="sC2" class="ns" x="710" y="358" text-anchor="middle">livre</text>
+      <rect x="660" y="370" width="100" height="8" rx="4" fill="#E3EAE7"/>
+      <rect id="bC2" x="660" y="370" width="0" height="8" rx="4" fill="var(--ink)"/>
+      <circle id="ctor" cx="400" cy="134" r="8" fill="var(--bat)" stroke="#fff" stroke-width="2.5"/>
+      <text id="ctorTxt" x="416" y="138" class="ns">contator dos painéis: fechado</text>
+    </svg>
+  </div>
+
+  <div class="side">
+    <div>
+      <h2>Decisão do sistema agora</h2>
+      <p id="decision" class="decision">Aguardando dados…</p>
+      <p id="hint" class="hint">Plugue veículos e mexa na geração solar no Wokwi para ver o sistema reagir.</p>
+    </div>
+    <div>
+      <h2>Gestão de carga</h2>
+      <span id="pontaChip" class="chip calm">Fora de ponta</span>
+      <div class="row"><span>Importação da rede</span><span><b id="impTxt">0,0</b> de <b id="limTxt">30</b> kW</span></div>
+      <div class="bar"><i id="impBar"></i></div>
+      <div class="row"><span>Pedido dos veículos</span><b><span id="reqTxt">0,0</span> kW</b></div>
+      <div class="row"><span>Entregue aos veículos</span><b><span id="entTxt">0,0</span> kW</b></div>
+    </div>
+    <div>
+      <h2>Proteção da rede</h2>
+      <span id="relayChip" class="chip ok">Relé fechado</span>
+      <div class="vnow"><span id="vNow">–</span> <small>V</small></div>
+      <div class="gauge" aria-hidden="true"><div class="safe"></div><div id="marker" class="marker" style="left:0"></div></div>
+      <div class="gscale"><span>0 V</span><span>faixa segura 176–242 V</span><span>300 V</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="lower">
+  <div class="chartwrap">
+    <h2>Potência ao longo do dia simulado</h2>
+    <div class="legend">
+      <span><i style="background:var(--sun)"></i>Geração solar</span>
+      <span><i style="background:var(--ev)"></i>Carregadores</span>
+      <span><i style="background:var(--grid)"></i>Importação da rede</span>
+      <span><i style="background:var(--alert);height:2px"></i>Limite da rede</span>
+    </div>
+    <canvas id="chart" aria-label="Gráfico de potência: solar, carregadores e rede"></canvas>
+  </div>
+  <div>
+    <h2>Resultados acumulados</h2>
+    <div class="impact">
+      <div class="big"><span>Energia limpa entregue</span><b><span id="pct">0</span>%</b></div>
+      <div><span>Entregue aos veículos</span><b><span id="kVeic">0,0</span> kWh</b></div>
+      <div><span>Autonomia estimada</span><b><span id="km">0</span> km</b></div>
+      <div><span>CO₂ evitado</span><b><span id="co2">0,00</span> kg</b></div>
+      <div><span>Economia estimada</span><b>R$ <span id="eco">0,00</span></b></div>
+      <div><span>Pico de demanda da rede</span><b><span id="pico">0,0</span> kW</b></div>
+      <div><span>Sessões de recarga</span><b id="sess">0</b></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Relógio simulado: <b id="hora">--:--</b></span>
+  <span>Tópico MQTT: <code id="topicTxt"></code></span>
+  <button id="demoBtn" type="button">Simular dados (teste sem o Wokwi)</button>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script>
+// ===== CONFIGURAÇÃO =====
+const BROKER = "wss://broker.hivemq.com:8884/mqtt";
+const TOPICO = "fiap/sprint4/goodwe-sim/telemetria";   // deve ser igual ao TOPICO do sketch
+
+const $ = id => document.getElementById(id);
+const nf = (v, d=1) => Number(v).toLocaleString('pt-BR', {minimumFractionDigits:d, maximumFractionDigits:d});
+const fmtHora = h => { const hh = Math.floor(h), mm = Math.round((h-hh)*60)%60; return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0'); };
+const cor = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+$('topicTxt').textContent = TOPICO;
+
+const MODOS = {
+  SOL_DIRETO:             ['Sol abastecendo os veículos', 'A geração solar cobre a recarga sem usar bateria nem rede.', false],
+  USA_BATERIA:            ['Bateria completando a recarga', 'O sol não basta; a bateria da estação cobre a diferença (na ponta ela vem antes da rede).', false],
+  COMPLEMENTA_COM_REDE:   ['Rede complementando o sol', 'Fora da ponta, a rede cobre o que o sol não entrega, até o limite contratado.', false],
+  LIMITANDO_POTENCIA:     ['Potência reduzida: limite da rede atingido', 'A gestão de carga divide a energia disponível entre os carregadores para não ultrapassar a demanda contratada.', true],
+  OCIOSO_CARREGA_BATERIA: ['Sem veículos: sol carregando a bateria', 'Toda a geração vai para a bateria da estação, pronta para o próximo pico.', false],
+  OCIOSO_EXPORTA:         ['Sem veículos: bateria cheia, exportando', 'A sobra solar é injetada na rede.', false],
+  OCIOSO:                 ['Estação em espera', 'Nenhum veículo plugado e sem geração solar.', false],
+  PROTECAO_ATIVA:         ['Proteção ativa: carregadores desligados', 'Tensão fora da faixa segura; a estação se desconecta e os painéis desligam.', true]
+};
+
+function setFlow(id, kw, reverse){
+  const el = $(id), ativo = Math.abs(kw) > 0.05;
+  el.classList.toggle('idle', !ativo);
+  el.classList.toggle('rev', ativo && !!reverse);
+}
+
+// ===== Gráfico =====
+const MAXPTS = 72, serie = {pv:[], ev:[], imp:[], hora:[], ponta:[]};
+const cv = $('chart'), ctx = cv.getContext('2d');
+function desenhar(limite){
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = w*dpr; cv.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+  const L=38, R=8, T=8, B=24, YMAX=45, lim = limite || 30;
+  const X = i => L + (w-L-R) * (i + MAXPTS - serie.pv.length) / (MAXPTS-1);
+  const Y = v => T + (h-T-B) * (1 - v/YMAX);
+  ctx.font = '12px IBM Plex Sans, sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  for(let v=0; v<=YMAX; v+=15){
+    ctx.strokeStyle = cor('--line'); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(L,Y(v)); ctx.lineTo(w-R,Y(v)); ctx.stroke();
+    ctx.fillStyle = cor('--muted'); ctx.fillText(v, L-8, Y(v));
+  }
+  // faixa do horário de ponta
+  let ini = -1;
+  for(let i=0; i<=serie.ponta.length; i++){
+    const on = i < serie.ponta.length && serie.ponta[i];
+    if(on && ini < 0) ini = i;
+    if(!on && ini >= 0){
+      const x0 = X(ini), x1 = X(i-1);
+      ctx.fillStyle = 'rgba(18,48,47,.07)'; ctx.fillRect(x0, T, Math.max(x1-x0, 4), h-T-B);
+      ctx.fillStyle = cor('--muted'); ctx.font = '11px IBM Plex Sans, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText('ponta', x0+4, T+4); ctx.font = '12px IBM Plex Sans, sans-serif';
+      ini = -1;
+    }
+  }
+  ctx.save(); ctx.setLineDash([6,5]); ctx.strokeStyle = cor('--alert'); ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(L,Y(lim)); ctx.lineTo(w-R,Y(lim)); ctx.stroke(); ctx.restore();
+  const linha = (arr, c, fill) => {
+    if(arr.length < 2) return;
+    const trace = () => { ctx.beginPath(); arr.forEach((v,i)=> i? ctx.lineTo(X(i),Y(v)) : ctx.moveTo(X(i),Y(v))); };
+    if(fill){ trace(); ctx.lineTo(X(arr.length-1),Y(0)); ctx.lineTo(X(0),Y(0)); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); }
+    trace(); ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.lineJoin='round'; ctx.stroke();
+  };
+  linha(serie.pv, cor('--sun'), 'rgba(233,161,0,.16)');
+  linha(serie.ev, cor('--ev'));
+  linha(serie.imp, cor('--grid'));
+  ctx.fillStyle = cor('--muted'); ctx.textBaseline = 'top'; ctx.textAlign = 'center';
+  serie.hora.forEach((hr, i) => {
+    if(Math.abs(hr/3 - Math.round(hr/3)) < 0.01){
+      const x = Math.min(Math.max(X(i), L+14), w-R-14);
+      ctx.fillText(fmtHora(hr), x, h-B+6);
+    }
+  });
+}
+let ultimoLim = 30;
+window.addEventListener('resize', () => desenhar(ultimoLim));
+
+// ===== Renderização =====
+let ultimaMsg = 0;
+function carregador(n, kw, on, soc){
+  $('vC'+n).textContent = nf(kw)+' kW';
+  $('bC'+n).setAttribute('width', on ? Math.max(0,Math.min(100,soc)) : 0);
+  $('sC'+n).textContent = !on ? 'livre' : soc >= 99.5 ? 'completo · 100%' : kw > 0.05 ? 'carregando · '+nf(soc,0)+'%' : 'aguardando · '+nf(soc,0)+'%';
+  setFlow('fC'+n, kw, false);
+}
+function render(d){
+  ultimaMsg = Date.now(); ultimoLim = d.lim_kw;
+  const aberto = d.rele === 'ABERTO', imp = Math.max(0, -d.rede_kw), evTotal = d.c1_kw + d.c2_kw;
+
+  setFlow('fSolar', d.pv_kw, false);
+  setFlow('fBat',   d.bat_kw, d.bat_kw < 0);
+  setFlow('fRede',  d.rede_kw, d.rede_kw < 0);
+  if(aberto) $('fRede').classList.add('idle');
+  $('gridCut').setAttribute('visibility', aberto ? 'visible' : 'hidden');
+
+  $('vSolar').textContent = nf(d.pv_kw)+' kW';
+  const pvOn = d.pv_on === undefined ? true : !!d.pv_on;
+  $('ctor').setAttribute('fill', pvOn ? cor('--bat') : cor('--alert'));
+  $('ctorTxt').textContent = 'contator dos painéis: ' + (pvOn ? 'fechado' : 'aberto');
+  $('sSolar').textContent = pvOn ? 'gerando' : (aberto ? 'desligada (proteção)' : 'desconectada (sem sol)');
+  $('vBat').textContent = nf(d.soc,0)+'%';
+  $('socBar').setAttribute('width', 80*Math.max(0,Math.min(100,d.soc))/100);
+  $('sBat').textContent = d.bat_kw > 0.05 ? 'carregando' : d.bat_kw < -0.05 ? 'descarregando' : 'em espera';
+  $('vRede').textContent = aberto ? '–' : nf(Math.abs(d.rede_kw))+' kW';
+  $('sRede').textContent = aberto ? 'desconectada' : d.rede_kw > 0.05 ? 'exportando' : d.rede_kw < -0.05 ? 'importando' : 'em espera';
+  carregador(1, d.c1_kw, d.c1_on, d.c1_soc);
+  carregador(2, d.c2_kw, d.c2_on, d.c2_soc);
+
+  const m = MODOS[d.modo] || [d.modo, '', false];
+  $('decision').textContent = m[0]; $('decision').classList.toggle('warn', m[2]);
+  $('hint').textContent = m[1] + (!pvOn && !aberto ? ' Painéis desconectados por falta de sol.' : '');
+
+  $('pontaChip').textContent = d.ponta ? 'Horário de ponta: bateria primeiro' : 'Fora de ponta: rede mais barata';
+  $('pontaChip').className = 'chip ' + (d.ponta ? 'peak' : 'calm');
+  $('impTxt').textContent = nf(imp); $('limTxt').textContent = nf(d.lim_kw,0);
+  const pc = Math.min(100, imp/d.lim_kw*100);
+  $('impBar').style.width = pc+'%'; $('impBar').classList.toggle('full', pc >= 98);
+  $('reqTxt').textContent = nf(d.req_kw); $('entTxt').textContent = nf(d.ent_kw);
+
+  $('relayChip').textContent = aberto ? 'Relé aberto: proteção atuou' : 'Relé fechado: conectado à rede';
+  $('relayChip').className = 'chip ' + (aberto ? 'bad' : 'ok');
+  $('vNow').textContent = nf(d.v_rede,0);
+  $('marker').style.left = 'calc('+Math.max(0,Math.min(100,d.v_rede/3))+'% - 2px)';
+  $('marker').classList.toggle('bad', aberto);
+
+  $('pct').textContent = nf(d.pct_limpa,0); $('kVeic').textContent = nf(d.kwh_veic);
+  $('km').textContent = nf(d.km,0); $('co2').textContent = nf(d.co2_kg,2); $('eco').textContent = nf(d.economia_rs,2);
+  $('pico').textContent = nf(d.pico_kw); $('sess').textContent = d.sessoes;
+  $('hora').textContent = fmtHora(d.hora);
+  const dia = d.hora >= 6 && d.hora < 18;
+  $('clockIc').textContent = dia ? '☀' : '☾'; $('clockTxt').textContent = fmtHora(d.hora); $('clockLb').textContent = dia ? 'dia' : 'noite';
+
+  serie.pv.push(d.pv_kw); serie.ev.push(evTotal); serie.imp.push(imp); serie.hora.push(d.hora); serie.ponta.push(d.ponta ? 1 : 0);
+  if(serie.pv.length > MAXPTS){ ['pv','ev','imp','hora','ponta'].forEach(k => serie[k].shift()); }
+  desenhar(d.lim_kw);
+}
+
+// ===== Status =====
+let conectado = false, demo = false;
+function status(){
+  const s = $('status'), t = $('statusTxt');
+  if(demo){ s.className='status wait'; t.textContent='Modo de teste (dados simulados)'; return; }
+  if(!conectado){ s.className='status off'; t.textContent='Sem conexão com o broker'; }
+  else if(Date.now()-ultimaMsg < 5000){ s.className='status live'; t.textContent='Recebendo dados do ESP32'; }
+  else { s.className='status wait'; t.textContent='Conectado: aguardando o ESP32 publicar'; }
+}
+setInterval(status, 1000);
+
+// ===== MQTT =====
+if(typeof mqtt === 'undefined'){
+  $('statusTxt').textContent = 'Biblioteca MQTT não carregou (verifique a internet)';
+} else {
+  const client = mqtt.connect(BROKER, {clientId:'painel-'+Math.random().toString(16).slice(2,8), reconnectPeriod:3000});
+  client.on('connect', () => { conectado = true; client.subscribe(TOPICO); status(); });
+  client.on('close',   () => { conectado = false; status(); });
+  client.on('message', (_t, payload) => {
+    if(demo) return;
+    try { render(JSON.parse(payload.toString())); } catch(e){ console.warn('JSON inválido', e); }
+  });
+}
+
+// ===== Modo de teste (mesma lógica do ESP32) =====
+let demoTimer = null;
+$('demoBtn').addEventListener('click', () => {
+  demo = !demo;
+  $('demoBtn').textContent = demo ? 'Parar simulação' : 'Simular dados (teste sem o Wokwi)';
+  clearInterval(demoTimer);
+  if(!demo){ status(); return; }
+  const DT=0.25, LIM=30, EVCAP=60, BCAP=30, BMAX=15;
+  let hora=6, soc=50, t=0, sess=0, eV=0, eL=0, eco=0, pico=0;
+  const ev=[{on:false,soc:0,kw:0},{on:false,soc:0,kw:0}];
+  demoTimer = setInterval(() => {
+    t++; hora=(hora+DT)%24;
+    [[0,6,40],[1,14,52]].forEach(([i,a,b]) => { const on = (t%60)>=a && (t%60)<b; if(on && !ev[i].on){ ev[i].soc=20+Math.random()*20; sess++; } ev[i].on=on; });
+    const pv = Math.max(0, Math.sin((hora-6)/12*Math.PI))*30, v = (t%90>82)?255:220, aberto = v>242;
+    const ponta = hora>=18 && hora<21;
+    let req=[0,0], total=0;
+    ev.forEach((e,i)=>{ if(!aberto && e.on && e.soc<99.9){ let r = e.soc<80?22:22*Math.max(.15,(100-e.soc)/20); r=Math.min(r,(100-e.soc)/100*EVCAP/DT); req[i]=r; total+=r; }});
+    const pvOn = !aberto && pv>0.5, pvu = pvOn?pv:0, disp=Math.max(0,BCAP*(soc-10)/100/DT);
+    const pl=Math.min(pvu,total); let rem=total-pl, bd=0, gi=0;
+    if(ponta){ bd=Math.min(rem,BMAX,disp); rem-=bd; gi=Math.min(rem,LIM); rem-=gi; }
+    else { gi=Math.min(rem,LIM); rem-=gi; bd=Math.min(rem,BMAX,disp); rem-=bd; }
+    const ent=total-rem, frac=total>0.01?ent/total:0, sur=pvu-pl, esp=BCAP*(100-soc)/100/DT;
+    const bc=Math.min(sur,BMAX,esp), ex=sur-bc, pBat=bc-bd, pRede=ex-gi;
+    let modo;
+    if(aberto) modo='PROTECAO_ATIVA'; else if(total<0.01) modo = bc>0.01?'OCIOSO_CARREGA_BATERIA':(ex>0.01?'OCIOSO_EXPORTA':'OCIOSO');
+    else if(rem>0.01) modo='LIMITANDO_POTENCIA'; else if(gi>0.01) modo='COMPLEMENTA_COM_REDE'; else if(bd>0.01) modo='USA_BATERIA'; else modo='SOL_DIRETO';
+    soc=Math.max(0,Math.min(100,soc+pBat*DT/BCAP*100));
+    ev.forEach((e,i)=>{ e.kw=req[i]*frac; e.soc=Math.min(100,e.soc+e.kw*DT/EVCAP*100); });
+    eV+=ent*DT; eL+=(pl+bd)*DT; eco+=(pl+bd)*DT*(ponta?2:0.8); pico=Math.max(pico,gi);
+    render({hora, v_rede:v, pv_kw:pvu, pv_on:pvOn?1:0, soc, bat_kw:pBat, rede_kw:pRede, rele:aberto?'ABERTO':'FECHADO', modo, ponta:ponta?1:0,
+      c1_kw:ev[0].kw, c2_kw:ev[1].kw, c1_on:ev[0].on, c2_on:ev[1].on, c1_soc:ev[0].soc, c2_soc:ev[1].soc,
+      req_kw:total, ent_kw:ent, lim_kw:LIM, kwh_veic:eV, kwh_limpa:eL, pct_limpa:eV>0.01?eL/eV*100:0, km:eV*6,
+      co2_kg:eL*0.04, economia_rs:eco, pico_kw:pico, sessoes:sess});
+    status();
+  }, 600);
+});
+desenhar(30);
+</script>
+</body>
+</html>
